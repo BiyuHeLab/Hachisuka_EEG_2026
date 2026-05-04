@@ -1,0 +1,21 @@
+# Ignore everything by default
+
+# Also ignore these file types:
+*.dicom
+*.csv
+*.mat
+*.bmp
+*.jpg
+*.png
+*.nii.gz
+*.nii
+*Pipfile.lock
+*.log
+.txt
+*.DS_Store
+*.zprofile
+*.git
+
+# But don't ignore these:
+!/.gitignore
+!/README.md
