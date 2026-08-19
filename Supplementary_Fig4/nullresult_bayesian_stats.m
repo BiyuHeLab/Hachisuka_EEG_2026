@@ -7,12 +7,11 @@
 
 clear;
 
-%% Loading data for CCGP & PS (Supplementary Fig 6)
+%% Loading data for CCGP & PS
 
 addpath(genpath('C:\Users\ahach\OneDrive\Desktop\C2F_manuscript\BFF_repo-master\codes\local_functions'));
 
 cd ('C:\Users\ahach\OneDrive\Desktop\C2F_manuscript\BF_stats\CCGP_alltrials');
-% cd('C:\Users\ahach\OneDrive\Desktop\C2F_manuscript\BF_stats\BasicControl_alltrials');
 load('data_for_bf_ccgp.mat');
 load('data_for_bf_control.mat');
 load('data_for_ps.mat');

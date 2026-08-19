@@ -13,7 +13,7 @@ clear;
 addpath('/isilon/LFMI/VMdrive/Ayaka/EEG/toolboxes/CoSMoMVPA/mvpa');
 
 numSubjects = 33;
-subjectslist = setdiff(1:numSubjects,[22 32 33]); %exclude subject 27
+subjectslist = setdiff(1:numSubjects,[22 32 33]);
 
 run_pca = 0;
 reverse = 1;

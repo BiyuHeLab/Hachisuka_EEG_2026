@@ -4,7 +4,6 @@ clear; close all
 addpath('/isilon/LFMI/VMdrive/Ayaka/EEG/toolboxes/CoSMoMVPA/mvpa');
 %% Load each subject:
 numSubjects = 33;
-% conditionList = {'Normal','Masked','LSF'};
 conditionList = {'Normal','Masked','LSF'};
 timewindow = linspace(-0.4,0.8,241);
 plotcounter = 0;
@@ -25,8 +24,7 @@ trial_bin_num = 4;
 numrepeats = 300;
 OCCIP = 0;
 run_pca = 0;
-subjectslist = setdiff(1:numSubjects,[22 32 33]); %exclude subject 27
-% vars_C2F_EEG.Subs.RemovedSubs = [5 6 9 12 16 21 32 33 38 39]; %subjects will be removed from analysis
+subjectslist = setdiff(1:numSubjects,[22 32 33]);
 
 exemppairlist{1} = 1:3;
 exemppairlist{2} = 4:6;
@@ -52,7 +50,6 @@ for aa = 1:length(superorbasicLIST)
 
     if contains(superorbasic,'Super')
         save_dir=fullfile(['/isilon/LFMI/VMdrive/Ayaka/EEG/CosmoMVPA_results/AllChan200Hz_balexemp/',condition,'/LDA/noPCA_35Hz_', num2str(time_radius), 'timerad_', num2str(trial_bin_num), 'trialresample_',num2str(numrepeats),'repeats_morechan',superorbasic,'_LDAba_',trialtype,'Trials/']);
-        % save_dir=fullfile(['/isilon/LFMI/VMdrive/Ayaka/EEG/BigPurple/AllChan/',condition,'/noPCA_35Hz_100Hz_', num2str(nchunks), 'chunks_', num2str(time_radius), 'timerad_', num2str(trial_bin_num), 'trialresample_100repeats_morechan',superorbasic,'_LDAba_AllTrials/']);
         if exist(fullfile([save_dir,'sub',num2str(subjNumStr),'_dataEEG_',condition,'_mvpaoutput.mat']),'file')
             mvpaoutputdir = fullfile([save_dir,'sub',num2str(subjNumStr),'_dataEEG_',condition,'_mvpaoutput.mat']); % this is the direct MVPA output  
             group_mvpaoutput{s} = load(mvpaoutputdir).sl_map;
@@ -115,12 +112,6 @@ else
     n_subj = length(group_mvpaoutput2);
 end
 
-% group_mvpaoutput2{4} = [];
-% group_mvpaoutput2 = group_mvpaoutput2(~cellfun(@isempty, group_mvpaoutput2));
-% n_subj = length(group_mvpaoutput2);
-%% Group datasets together:
-%some "non-unique" elements due to 0 being jittered, just use the
-%parameters from subject 1 because they are mostly the same.
 disp(n_subj);
 ds_cell = cell(n_subj,1);
 actual_dataset= cell(n_subj,1);
@@ -375,78 +366,6 @@ for c = 1:3
     fprintf('%.4f [%.4f %.4f]\n', onsettime(c,aa), CIbyCond_onset{c}(1,aa), CIbyCond_onset{c}(2,aa));
 end
 end
-%% Wilcoxon tests:
-% for c = 1:3
-%     exemp = sig_onset_all{c,1};
-%     basic = sig_onset_all{c,2};
-%     super = sig_onset_all{c,3};
-%     [p(c,1),h,stats] = signrank(super,basic);
-%     [p(c,2),h,stats] = signrank(super,exemp);
-%     [p(c,3),h,stats] = signrank(basic,exemp);
-%     difference = super - basic;
-%     difference(isnan(difference)) = 0;
-%     median_difference = median(difference);
-%     sorted_difference = sort(difference);
-%     permuted_onset_time = onsettime(c,3) - onsettime(c,2);
-%     rank_val = 1000 - (find(sorted_difference >= permuted_onset_time, 1, 'first'));
-%     if permuted_onset_time > median_difference
-%         p_val_diff(c) = rank_val/500;
-%     else
-%         p_val_diff(c) = (1000-rank_val) / 500;
-%     end
-%     diff_CI(c,:) = prctile(difference,[2.75 97.5]);
-% end
-% 
-% disp(diff_CI);
-%% Taking the difference of onsets:
-% figcounter = 0;
-% disp('Onset difference');
-% for c = 1:3
-%     condition = conditionList{c};
-%     disp(condition);
-%     counter = 0;
-%     for aa = 1:length(superorbasicLIST)
-%         figcounter = figcounter + 1;
-%         if aa == 1
-%             aa1 = 1; aa2 = 2;
-%             compar_var = 'Super-Basic';
-%             disp(compar_var);
-%         elseif aa == 2
-%             aa1 = 1; aa2 = 3;
-%            compar_var = 'Super-Exemplar';
-%             disp(compar_var);
-%         elseif aa == 3
-%             aa1 = 2; aa2 = 3;
-%             compar_var = 'Basic-Exemplar';
-%             disp(compar_var);
-%         end
-%         counter = counter + 1;
-%         sig_onset_diff = sig_onset_all{c,aa1} - sig_onset_all{c,aa2};
-%         x = sig_onset_diff;
-%         x(isnan(x)) = 0;
-%         onsetdiff_all{c,counter} = x; 
-%         subplot(3,3,figcounter);
-%         histogram(x);
-%         title(compar_var);
-%         onset_diff_ci{c,counter} = prctile(x,[2.5 97.5]);
-%         fprintf('[%.4f %.4f]\n', onsetdiff_all{c,counter}(1), onset_diff_ci{c,counter}(2));
-%     end
-% end
-
-% {c,1} is exemplar-basic
-% {c,2} is exemplar-super
-% {c,3} is basic-super
-
-% figure; set(gcf,'Color','w');
-% for c = 1:3
-%         subplot(1,3,c); hold on
-%         bar(1,onset_diff_mean{c,1},'FaceColor',condColor{3});
-%         bar(2,onset_diff_mean{c,2},'FaceColor',condColor{2})
-%         bar(3,onset_diff_mean{c,3},'FaceColor',condColor{1})
-%         errorbar(1,onset_diff_mean{c,1}, onset_diff_ci{c,1}(1),onset_diff_ci{c,1}(2),'.','Color','k','Linewidth',1);
-%         errorbar(2,onset_diff_mean{c,2}, onset_diff_ci{c,2}(1),onset_diff_ci{c,2}(2),'.','Color','k','Linewidth',1);
-%         errorbar(3,onset_diff_mean{c,3}, onset_diff_ci{c,3}(1),onset_diff_ci{c,3}(2),'.','Color','k','Linewidth',1);
-% end
 
 %% Peak latency test:
 clearvars bootstrapbycond_all confidence_int
@@ -496,49 +415,6 @@ for c = 1:3
 end
 end
 
-%% Taking the difference of peaks:
-% disp('Peak difference');
-% for c = 1:3
-%     condition = conditionList{c};
-%     disp(condition);
-%     counter = 0;
-%     for aa = 1:length(superorbasicLIST)
-%         if aa == 1
-%             aa1 = 1; aa2 = 2;
-%             disp('Super-Basic');
-%         elseif aa == 2
-%             aa1 = 1; aa2 = 3;
-%             disp('Super-Exemplar');
-%         elseif aa == 3
-%             aa1 = 2; aa2 = 3;
-%             disp('Basic-Exemplar');
-%         end
-%         counter = counter + 1;
-%         sig_peak_diff = peak_all{c,aa1} - peak_all{c,aa2};
-%         x = sig_peak_diff;
-%         peak_diff_ci{c,counter} = prctile(x,[2.5 97.5]);
-%         fprintf('[%.4f %.4f]\n', peak_diff_ci{c,counter}(1), peak_diff_ci{c,counter}(2));
-%     end
-% end
-%% Sanity check plots:
-% figcounter = 0;
-% figure; set(gcf,'Color','w');
-% for c = 1:3
-%     figcounter = figcounter + 1;
-%     subplot(3,3,figcounter); hold on
-%     histogram(onsetdiff_all{c,figcounter});
-%     xline(onset_diff_ci{c,1}(1));
-%     xline(onset_diff_ci{c,1}(2));
-% 
-%         % errorbar(1,0, onset_diff_ci{c,1}(1),onset_diff_ci{c,1}(2),'.','Color','k','Linewidth',1);
-%         % errorbar(2,0, onset_diff_ci{c,2}(1),onset_diff_ci{c,2}(2),'.','Color','k','Linewidth',1);
-%         % errorbar(3,0, onset_diff_ci{c,3}(1),onset_diff_ci{c,3}(2),'.','Color','k','Linewidth',1);
-% end
-
-%% Load permuted bootstrap data for onset/peak differences:
-% conditions are scrambled.
-% clc
-% close all
 conditionList = {'Normal','Masked','LSF'};
 superorbasicLIST1 = {'Super','Super','Basic'};
 superorbasicLIST2 = {'Basic','Exemplar','Exemplar'};
@@ -651,13 +527,6 @@ for c = 1:3
 
     confidence_int = prctile(bootstrap_diff_onset, [2.5 97.5]); %low
     CIbyCond_onset{c} = confidence_int;
-    % figcounter = figcounter + 1;
-    % subplot(3,3,figcounter)
-    % hold on
-    % histogram(bootstrap_diff_onset);
-    % 
-    % xline(confidence_int(1));
-    % xline(confidence_int(2));
 
     confidence_int = prctile(bootstrap_diff_peak, [2.5 97.5]); %low
     figcounter = figcounter + 1;

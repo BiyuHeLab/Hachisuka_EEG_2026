@@ -33,7 +33,7 @@ results <- foreach(w = 2:nWindows-1, .packages = c("ordinal")) %dopar% {
   timeEnd = edges[w] + 1
   thisGroup <- df[ df$timebin >= timeStart & df$timebin <= timeEnd, ]
   # General:
-  model <- clmm(as.ordered(PAS) ~ 1 + Dist + Cond + (1 | Subject), data = thisGroup)
+  model <- clmm(as.ordered(PAS) ~ 1 + Dist + as.factor(Cond) + (1 | Subject), data = thisGroup)
 
   vc <- vcov(model)
   
@@ -43,12 +43,7 @@ results <- foreach(w = 2:nWindows-1, .packages = c("ordinal")) %dopar% {
   
   pval_x1 <- summary(model)$coefficients["Dist", "Pr(>|z|)"]
   
-  coef_x2 <- coef(model)["Cond"]
-  se2 <- sqrt(vc["Cond", "Cond"])
-  t_value2 <- coef_x2 / se2
-  
-  pval_x2 <- summary(model)$coefficients["Cond", "Pr(>|z|)"]
-  c(beta1 = coef_x1, pval1 = pval_x1, beta2 = coef_x2, pval2 = pval_x2, tval_dist = t_value1, tval_cond = t_value2)
+  c(beta1 = coef_x1, pval1 = pval_x1, tval_dist = t_value1)
 }
 
 stopCluster(cl)

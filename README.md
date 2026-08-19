@@ -8,13 +8,13 @@ Probing the neural geometry of conscious object perception in time
 
 ### *Behavioral Experiment*
 
-Fig. 2A-C & Supplementary Fig. 3: Behavior analysis and plotting
+Fig. 2A-C & Supplementary Fig. 2: Behavior analysis and plotting
 - `~/Fig2/main_behavior_script.m`
 
 Fig. 2D-F:
 - `~/Fig2/plotsuperandbasic_byPAS.m`
 
-Supplementary Fig. 3:
+Supplementary Fig. 2:
 - `~/Fig2/behav_split_by_subcategory.m`
 
 Statistics:  
@@ -22,16 +22,16 @@ Statistics:
 - `~/Fig2/Statistics/PASbycategoryaccuracy.jasp`
 - `~/Fig2/Statistics/PASbycategoryaccuracy.jasp`
 - `~/Fig2/Statistics/Main_3wayANOVA_shapirowilk.R`
-- `~/Supplementary_Fig3/Statistics/percentBasicCorrect_byDetect_or_Rec.jasp`
-- `~/Supplementary_Fig3/Statistics/percentSuperCorrect_byDetect_or_Rec.jasp`
-- `~/Supplementary_Fig3/Statistics/Basic_BySubcategory.jasp.jasp`
-- `~/Supplementary_Fig3/Statistics/Super_BySubcategory.jasp`
+- `~/Supplementary_Fig2/Statistics/percentBasicCorrect_byDetect_or_Rec.jasp`
+- `~/Supplementary_Fig2/Statistics/percentSuperCorrect_byDetect_or_Rec.jasp`
+- `~/Supplementary_Fig2/Statistics/Basic_BySubcategory.jasp.jasp`
+- `~/Supplementary_Fig2/Statistics/Super_BySubcategory.jasp`
 
 -----
 
 ### *Superordinate & Basic Multivariate Decoding Analysis*
 
-Fig. 3A-C, G & Supplementary Fig. 6A-B: Timeseries decoding analysis
+Fig. 3A-C, G & Supplementary Fig. 3A-B: Timeseries decoding analysis
 
 Subject level: 
 - `~/Fig3/contentdecoding_single.m`
@@ -40,7 +40,7 @@ Group level:
 - `~/Fig3/contentdecoding_superbasicexemp_group.m`
   
 Bootstrapping decoding onset/peak times:
-- `~/Supplementary_Fig6/bootstrap_peakonset_groupfinal_main.m`
+- `~/Supplementary_Fig3/bootstrap_peakonset_groupfinal_main.m`
 
 Fig. 3D-F: Searchlight decoding analysis
 
@@ -50,22 +50,38 @@ Subject level:
 Group level: 
 - `~/Fig3/contentdecoding_searchlight_group.m`
 
-Fig 3E-F & Supplementary Fig. 7: Timeseries cross-condition decoding analysis
+Fig 3E-F & Supplementary Fig. 3: Timeseries cross-condition decoding analysis
 
 Subject level: 
-- `~/Supplementary_Fig7/crossdecoding_single.m`
+- `~/Supplementary_Fig3/crossdecoding_single.m`
   
 Group level: 
-- `~/Supplementary_Fig7/crossdecoding_group.m`
+- `~/Supplementary_Fig3/crossdecoding_group.m`
   
 Bootstrapping decoding onset/peak times:
-- `~/Supplementary_Fig6/bootstrap_peakonset_groupfinal_crosscond.m`
+- `~/Supplementary_Fig3/bootstrap_peakonset_groupfinal_crosscond.m`
 
-Supplementary Fig. 5: Exemplar decoding, group-level
-- `~/Supplementary _Fig5/contentdecoding_exemponly_group.m`
+Supplementary Fig. 3: Exemplar decoding, group-level
+- `~/Supplementary _Fig3/contentdecoding_exemponly_group.m`
 
-Supplementary Fig. 8: Bayesian statistics for undetected timeseries decoding
-- `~/Supplementary_Fig8and9/nullresult_bayesian_stats.m`
+Supplementary Fig. 4: Bayesian statistics for undetected timeseries decoding
+- `~/Supplementary_Fig4/nullresult_bayesian_stats.m`
+
+Supplementary Fig. 6: Time-generalization analysis
+
+Subject level: 
+- `~/Supplementary_Fig6/timegen_single.m`
+  
+Group level: 
+- `~/Supplementary_Fig6/timegen_group.m`
+
+Supplementary Fig. 7: Image position decoding analysis
+
+Subject level: 
+- `~/Supplementary_Fig7/positiondecoding_single.m`
+  
+Group level: 
+- `~/Supplementary_Fig7/positiondecoding_group.m`
 
 -----
 
@@ -80,7 +96,7 @@ Group level:
 - `~/Fig4/ccgp_group.m`
   
 Bootstrapping decoding onset/peak times:
-- `~/Supplementary_Fig5/bootstrap_peakonset_groupfinal_ccgp.m`
+- `~/Supplementary_Fig3/bootstrap_peakonset_groupfinal_ccgp.m`
 
 Fig. 4F: Parallelism Score (PS) analysis & plotting
 
@@ -89,17 +105,33 @@ Subject-level: same script as CCGP
 Group-level:
 - `~/Fig4/calculatePS.m`
 
-Supplementary Fig. 9: Bayesian statistics for CCGP and PS
+Supplementary Fig. 4: Bayesian statistics for CCGP and PS
 
-- `~/Supplementary_Fig8and9/nullresult_bayesian_stats.m`
+- `~/Supplementary_Fig4/nullresult_bayesian_stats.m`
 
-Supplementary Fig. 10: CCGP searchlight analysis
+Supplementary Fig. 8: CCGP searchlight analysis
 
 Subject-level: 
-- `~/Supplementary_Fig10/ccgp_searchlight_single.m`
+- `~/Supplementary_Fig8/ccgp_searchlight_single.m`
   
 Group-level: 
-- `~/Supplementary_Fig10/ccgp_searchlight_group.m`
+- `~/Supplementary_Fig8/ccgp_searchlight_group.m`
+
+-----
+
+### *Cross-image Location Decoding Analysis*
+
+Supplementary Fig. 5
+
+Subject-level: 
+- `~/Supplementary_Fig5/categorydecoding_crosspositions_single.m`
+
+Group-level: 
+- `~/Supplementary_Fig5/categorydecoding_crossposition_group.m`
+
+Subject-level: 
+- `~/Supplementary_Fig5/CCGPdecoding_crossposition_single.m`
+- `~/Supplementary_Fig5/CCGPdecoding_crossposition_group.m`
 
 -----
 
@@ -129,21 +161,14 @@ Permutation test:
 Group-level CLMM visualization: 
 - `~/Fig5/plot_CLMM_results.m`
 
------
+Supplementary Fig. 9: Distance-to-bound analysis control; predicting categorization performance
 
-### *Cross-image Location Decoding Analysis*
-
-Supplementary Fig. 4
-
-Subject-level: 
-- `~/Supplementary_Fig4/categorydecoding_ccrosspositions_single.m`
-
-Group-level: 
-- `~/Supplementary_Fig4/categorydecoding_crossposition_group.m`
-
-Subject-level: 
-- `~/Supplementary_Fig4/CCGPdecoding_crossposition_single.m`
-- `~/Supplementary_Fig4/CCGPdecoding_crossposition_group.m`
+Subject level: 
+- `~/Supplementary_Fig9/distancetobound_contentdecoding_bytrial_pasrating1.m`
+  
+Group level: 
+- `~/Supplementary_Fig9/plot_distance_to_pas_bytrial_pasrating1.m`
+- `~/Supplementary_Fig9/dist2bound_Lrforcorr_analysis.R
 
 -----
 
@@ -159,15 +184,15 @@ Fig. 6B-D: Mediation analysis
 
 ### *Behavioral Experiments 1 & 2 (OSOM behavioral experiments)*
 
-Supplementary Figs. 1 & 2: Analysis & Plotting
+Supplementary Fig. 1: Analysis & Plotting
 - `~/Supplementary_Fig1and2/OSOM_behav.m`
 
 Statistics:  
-- `~/Supplementary_Fig1and2/Statistics/Exp1_SuperBasicHR.jasp`
-- `~/Supplementary_Fig1and2/Statistics/Exp2_SuperBasicHR.jasp`
-- `~/Supplementary_Fig1and2/Statistics/Exp1_PAS.jasp`
-- `~/Supplementary_Fig1and2/Statistics/Exp2_PAS.jasp`
-- `~/Supplementary_Fig1and2/Statistics/OSOM_shapiro_wilk_test.R`
+- `~/Supplementary_Fig1/Statistics/Exp1_SuperBasicHR.jasp`
+- `~/Supplementary_Fig1/Statistics/Exp2_SuperBasicHR.jasp`
+- `~/Supplementary_Fig1/Statistics/Exp1_PAS.jasp`
+- `~/Supplementary_Fig1/Statistics/Exp2_PAS.jasp`
+- `~/Supplementary_Fig1/Statistics/OSOM_shapiro_wilk_test.R`
 
 
 -----
@@ -192,7 +217,7 @@ ACTICAP layout:
 -----
 
 ### *toolboxes*
-
+ ! [rejected]        main -> main (non-fast-forward)
 Fieldtrip: https://www.fieldtriptoolbox.org/
 
 CoSMoMVPA: https://www.cosmomvpa.org/

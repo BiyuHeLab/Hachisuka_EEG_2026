@@ -7,7 +7,7 @@ addpath('/isilon/LFMI/VMdrive/Ayaka/EEG/toolboxes/ADAM-1.14-beta/install');
 % startup;
 %% Load each subject:
 numSubjects = 33;
-subjectslist = setdiff(1:numSubjects,[22 32 33]); %exclude subject 27
+subjectslist = setdiff(1:numSubjects,[22 32 33]);
 % subjectslist = 1:20;
 
 conditionlist = {'Normal','Masked','LSF'}; %{'AllCond'}; %

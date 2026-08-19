@@ -6,18 +6,6 @@
 
 function C2F_crossdecoding_leaveoutexemp_batch(condition1,condition2,trialtype)
 
-% cd /isilon/LFMI/VMdrive/Ayaka/EEG/toolboxes/CoSMoMVPA/external/
-% cd libsvm; % change this to the directory where you put LIBSVM
-% cd matlab  % go to matlab sub-directory
-% make       % compile libsvm mex functions; requires a working compiler
-% rmpath(pwd)   % } ensure directory is on top
-% addpath(pwd)  % } of the search path
-% 
-% % verify it worked.
-% addpath('/isilon/LFMI/VMdrive/Ayaka/EEG/toolboxes/CoSMoMVPA/mvpa/');
-% addpath('/isilon/LFMI/VMdrive/Ayaka/EEG/toolboxes/CoSMoMVPA/external/');
-% cosmo_check_external('libsvm'); % should not give an error
-
 superorbasicLIST = {'Super','Basic1','Basic2'};
 analysistypeLIST = {'Super','Basic','Basic'};
 num_subjects = 31;

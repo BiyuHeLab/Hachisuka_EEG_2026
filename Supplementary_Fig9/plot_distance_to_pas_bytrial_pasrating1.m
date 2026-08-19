@@ -1,15 +1,17 @@
 %% Plotting PAS vs. Distance to Bound (LDA)
 
-% This script plots the following:
-% 1) Raw distance values, z-scored and smoothed using
-% the Savitzky-Golay filter with a 100ms window. The plot averages
+% This script plots the following (with outputs from
+% C2F_contentdecoding_distancetobound_bytrial_withrepeatv2.m)
+% 1) Raw distance values, z-scored, baseline-corrected, and smoothed using
+% the Savitzky-Golay filter with a 100ms window.The plot averages
 % single-trial level distances by PAS rating, plotting for traces total for
 % each of the ratings.
 % 2) Decoding accuracy outputs from this leave-one-trial out schematic.
 % For bootstrapping results of (2), see C2F_dist2bound_acc_bootstrap.m
-% 3) An option to plot the decoding accuracy outputs by PAS rating.
+% 3) An option to plot the decoding accuracy outputs by PAS rating (not
+% included in the MS).
 
-% Last updated April 23 2026, Ayaka Hachisuka
+% Last updated July 1 2025, Ayaka Hachisuka (ahachisu@gmail.com)
 
 clear; 
 num_subjects = 31;
@@ -25,8 +27,9 @@ whichcondA2 = 19:3:36;
 whichcondB2 = 20:3:36;
 whichcondC2 = 21:3:36;
 
+cond1 = 'AllCond'; %AllCond_50Hz';
 cond = 'AllCond';
-trialtype = 'SuperCorrect';
+trialtype = 'ALL';
 
 load(['/isilon/LFMI/VMdrive/Ayaka/EEG/fromThomas/Data/Behavioral/C2F_BehavData_30Subs.mat']);
 addpath('/isilon/LFMI/VMdrive/Ayaka/EEG/toolboxes/CoSMoMVPA/mvpa/');
@@ -43,15 +46,18 @@ trial_bin_num = 1;
 trial_resample = 1;
 nminval = 1;
 
+config.data_path = fullfile('/isilon/LFMI/VMdrive/Ayaka/EEG/ADAM_data/PASrating1/');
+data_path=fullfile(config.data_path);
+
 %% Super
 load('/isilon/LFMI/VMdrive/Ayaka/EEG/fromThomas/Data/Behavioral/trialinfo_alltrials_30subsV2.mat','trialinfo');
-save_dir=fullfile(['/isilon/LFMI/VMdrive/Ayaka/EEG/CosmoMVPA_results/AllChan200Hz_balexemp/' ...
-    'DistancetoBound_distbytrial_eucdistv4_withrepeat/Super/',cond,'/noPCA_35Hz_', num2str(time_radius), ...
+save_dir=fullfile(['/isilon/LFMI/VMdrive/Ayaka/EEG/Revision_round1/Fig5/AllCond/PASrating1/Super/noPCA_35Hz_', num2str(time_radius), ...
     'timerad_', num2str(trial_bin_num), 'trialresample_morechan_LDAba_',trialtype,'Trials/']);
 counter = 0;
 trialsofinterest = 1:36;
 alltrialcount = 0;
 for s = 1:length(subjectslist)
+    
     trials = find(ismember(trialinfo{s}, trialsofinterest));
     clearvars pasresp pas0ind pas1ind pas2ind pas3ind pasresp3 pasresp2 condbytrial supercorr basiccorr
     
@@ -67,7 +73,11 @@ for s = 1:length(subjectslist)
 
     load([save_dir,'sub',num2str(subjNumStr),'_dataEEG_',cond,'_mvpaoutput'],'sl_map2');
 
+    data_fn=fullfile([data_path,'sub', num2str(subjNumStr), '_dataEEG_',trialtype,'.mat']);
+    data_tl1=load(data_fn);
+
     sl_map = sl_map2;
+    sl_map.origtrialinfo = data_tl1.data3.origtrialinfo;
 
     trialnumbers = NaN(size(sl_map.dist,1), 1);                
     valid_rows = any(~isnan(sl_map.dist), 2); % rows without NaN
@@ -109,8 +119,8 @@ for s = 1:length(subjectslist)
     sl_map.dist(trialinfo2_expanded == 2) = -1 * sl_map.dist(trialinfo2_expanded == 2);
 
      % correct baseline
-     baseline = nanmean(sl_map.dist(:,1:81),2);
-     sl_map.dist = sl_map.dist - baseline;
+     % baseline = nanmean(sl_map.dist(:,1:81),2);
+     % sl_map.dist = sl_map.dist - baseline;
 
     ecounter = 0;
     for exemp = trialsofinterest
@@ -123,6 +133,10 @@ for s = 1:length(subjectslist)
     pas1ind = find(pasresp == 1);
     pas2ind = find(pasresp == 2);
     pas3ind = find(pasresp == 3);
+
+    corrind = find(supercorr == 1);
+    incorrind = find(supercorr == 0);
+
     keep_trials = 1:length(condbytrial);
 
     alldist_lmm{s} = sl_map.dist;
@@ -148,15 +162,18 @@ for s = 1:length(subjectslist)
     alldist1(counter,:) = nanmean((sl_map.dist(pas1ind,:)),1);
     alldist2(counter,:) = nanmean((sl_map.dist(pas2ind,:)),1);
     alldist3(counter,:) = nanmean((sl_map.dist(pas3ind,:)),1);
+
+    alldist_corr(counter,:) = nanmean((sl_map.dist(corrind,:)),1);
+    alldist_incorr(counter,:) = nanmean((sl_map.dist(incorrind,:)),1);
     allacc1(counter,:) = nanmean((sl_map.samples));
 
 end
 
 figure; hold on
-plot(nanmean(alldist0));
-plot(nanmean(alldist1));
-plot(nanmean(alldist2));
-plot(nanmean(alldist3),'r');
+plot(nanmean(alldist_corr),'color','b');
+plot(nanmean(alldist_incorr),'color','r');
+% plot(nanmean(alldist2));
+% plot(nanmean(alldist3),'r');
 
 %%
 lmm_super = cell(241,1);
@@ -194,8 +211,7 @@ end
 clearvars distbyexemp alldist_lmm
 trialsofinterest = 1:18;
 load('/isilon/LFMI/VMdrive/Ayaka/EEG/fromThomas/Data/Behavioral/trialinfo_alltrials_30subsV2.mat','trialinfo');
-save_dir1=fullfile(['/isilon/LFMI/VMdrive/Ayaka/EEG/CosmoMVPA_results/AllChan200Hz_balexemp/' ...
-    'DistancetoBound_distbytrial_eucdistv4_withrepeat/Basic1/',cond,'/noPCA_35Hz_', num2str(time_radius), 'timerad_', num2str(trial_bin_num), 'trialresample_morechan_LDAba_',trialtype,'Trials/']);
+save_dir1=fullfile(['/isilon/LFMI/VMdrive/Ayaka/EEG/Revision_round1/Fig5/AllCond/PASrating1/Basic1/noPCA_35Hz_', num2str(time_radius), 'timerad_', num2str(trial_bin_num), 'trialresample_morechan_LDAba_',trialtype,'Trials/']);
 counter = 0;
 for s = 1:length(subjectslist)
     clearvars pasresp pas0ind pas1ind pas2ind pas3ind pasresp3 pasresp2 condbytrial supercorr basiccorr trialnumbers
@@ -209,7 +225,11 @@ for s = 1:length(subjectslist)
         subjNumStr = num2str(subjNum);
     end
     load([save_dir1,'sub',num2str(subjNumStr),'_dataEEG_',cond,'_mvpaoutput'],'sl_map2');
+    data_fn=fullfile([data_path,'sub', num2str(subjNumStr), '_dataEEG_',trialtype,'.mat']);
+    data_tl1=load(data_fn);
+
     sl_map = sl_map2;
+    sl_map.origtrialinfo = data_tl1.data3.origtrialinfo;
 
     if s == 30
         A = sl_map.dist;
@@ -252,6 +272,9 @@ for s = 1:length(subjectslist)
     pas2ind = find(pasresp == 2);
     pas3ind = find(pasresp == 3);
 
+    corrind = find(basiccorr == 1);
+    incorrind = find(basiccorr == 0);
+
     NormalInd = find(condbytrial == 1);
     MaskedInd = find(condbytrial == 2);
     LSFInd = find(condbytrial == 3);
@@ -266,8 +289,8 @@ for s = 1:length(subjectslist)
     sl_map.dist(trialinfo2_expanded == 2) = -1 * sl_map.dist(trialinfo2_expanded == 2);
 
     % correct baseline
-    baseline = nanmean(sl_map.dist(:,1:81),2);
-    sl_map.dist = sl_map.dist - baseline;
+    % baseline = nanmean(sl_map.dist(:,1:81),2);
+    % sl_map.dist = sl_map.dist - baseline;
 
     ecounter = 0;
     for exemp = trialsofinterest
@@ -310,13 +333,16 @@ for s = 1:length(subjectslist)
     alldist3a(counter,:) = nanmean((sl_map.dist(pas3ind,:)),1);
     allacc1(counter,:) = nanmean((sl_map.samples));
 
+    alldist_corr(counter,:) = nanmean((sl_map.dist(corrind,:)),1);
+    alldist_incorr(counter,:) = nanmean((sl_map.dist(incorrind,:)),1);
+
 end
 
 figure; hold on
-plot(nanmean([alldist0a]));
-plot(nanmean([alldist1a]));
-plot(nanmean([alldist2a]));
-plot(nanmean([alldist3a]),'r');
+plot(nanmean([alldist_corr]));
+plot(nanmean([alldist_incorr]));
+% plot(nanmean([alldist2a]));
+% plot(nanmean([alldist3a]),'r');
 
 %%
 lmm_basic1 = cell(241,1);
@@ -354,8 +380,7 @@ end
 clearvars distbyexemp alldist_lmm
 trialsofinterest = 19:36;
 load('/isilon/LFMI/VMdrive/Ayaka/EEG/fromThomas/Data/Behavioral/trialinfo_alltrials_30subsV2.mat','trialinfo');
-save_dir2=fullfile(['/isilon/LFMI/VMdrive/Ayaka/EEG/CosmoMVPA_results/AllChan200Hz_balexemp/' ...
-    'DistancetoBound_distbytrial_eucdistv4_withrepeat/Basic2/',cond,'/noPCA_35Hz_', num2str(time_radius), 'timerad_', num2str(trial_bin_num), 'trialresample_morechan_LDAba_',trialtype,'Trials/']);
+save_dir2=fullfile(['/isilon/LFMI/VMdrive/Ayaka/EEG/Revision_round1/Fig5/AllCond/PASrating1/Basic2/noPCA_35Hz_', num2str(time_radius), 'timerad_', num2str(trial_bin_num), 'trialresample_morechan_LDAba_',trialtype,'Trials/']);
 counter = 0;
 for s = 1:length(subjectslist)
     clearvars pasresp pas0ind pas1ind pas2ind pas3ind pasresp3 pasresp2 condbytrial supercorr basiccorr
@@ -369,7 +394,11 @@ for s = 1:length(subjectslist)
         subjNumStr = num2str(subjNum);
     end
     load([save_dir2,'sub',num2str(subjNumStr),'_dataEEG_',cond,'_mvpaoutput'],'sl_map2');
+    data_fn=fullfile([data_path,'sub', num2str(subjNumStr), '_dataEEG_',trialtype,'.mat']);
+    data_tl1=load(data_fn);
+
     sl_map = sl_map2;
+    sl_map.origtrialinfo = data_tl1.data3.origtrialinfo;
     
     trialnumbers = NaN(size(sl_map.dist,1), 1);                
     valid_rows = any(~isnan(sl_map.dist), 2); % rows without NaN
@@ -416,8 +445,8 @@ for s = 1:length(subjectslist)
     sl_map.dist(trialinfo2_expanded == 2) = -1 * sl_map.dist(trialinfo2_expanded == 2);
 
      % correct baseline
-    baseline = nanmean(sl_map.dist(:,1:81),2);
-    sl_map.dist = sl_map.dist - baseline;
+    % baseline = nanmean(sl_map.dist(:,1:81),2);
+    % sl_map.dist = sl_map.dist - baseline;
 
     ecounter = 0;
     for exemp = trialsofinterest
@@ -436,6 +465,10 @@ for s = 1:length(subjectslist)
     pas1ind = find(pasresp == 1);
     pas2ind = find(pasresp == 2);
     pas3ind = find(pasresp == 3);
+
+    corrind = find(basiccorr == 1);
+    incorrind = find(basiccorr == 0);
+
     keep_trials = 1:length(condbytrial);
     alldist_lmm{s} = sl_map.dist;
     allpas_lmm{s} = pasresp;
@@ -461,13 +494,16 @@ for s = 1:length(subjectslist)
     alldist2b(counter,:) = nanmean((sl_map.dist(pas2ind,:)),1);
     alldist3b(counter,:) = nanmean((sl_map.dist(pas3ind,:)),1);
     allacc2(counter,:) = nanmean((sl_map.samples));
+
+    alldist_corr(counter,:) = nanmean((sl_map.dist(corrind,:)),1);
+    alldist_incorr(counter,:) = nanmean((sl_map.dist(incorrind,:)),1);
 end
 
 figure; hold on
-plot(movmean(nanmean(alldist0b),1));
-plot(movmean(nanmean(alldist1b),1));
-plot(movmean(nanmean(alldist2b),1));
-plot(movmean(nanmean(alldist3b),1),'r');
+plot(movmean(nanmean(alldist_corr),1));
+plot(movmean(nanmean(alldist_incorr),1));
+% plot(movmean(nanmean(alldist2b),1));
+% plot(movmean(nanmean(alldist3b),1),'r');
 %%
 lmm_basic2 = cell(241,1);
 for t = 1:241
@@ -488,7 +524,7 @@ for t = 1:241
         exemp_lmm = [exemp_lmm; allexemp_lmm{s}];
         cond_lmm = [cond_lmm; condtype_lmm{s}];       
         trial_lmm = [trial_lmm; trialnum_lmm{s}'];       
-        subj_lmm = [subj_lmm; repmat(s,length(allpas_lmm{s}),1)];       
+        subj_lmm = [subj_lmm; repmat(s,length(allpas_lmm{s}),1)];     
     end
     pas_lmm(pas_lmm == 3) = 4;
     pas_lmm(pas_lmm == 2) = 3;
@@ -545,9 +581,8 @@ lmm_basic_crosstime.Trial = lmm_basic_crosstime.NewTrial;
 
 % save data
 
-
-% writetable(lmm_super_crosstime, ['/isilon/LFMI/VMdrive/Ayaka/EEG/Distance2Bound_LMMstats/Signed_dist/',trialtype,'/lmm_super_zscore.csv']);
-% writetable(lmm_basic_crosstime, ['/isilon/LFMI/VMdrive/Ayaka/EEG/Distance2Bound_LMMstats/Signed_dist/',trialtype,'/lmm_basic_zscore.csv']);
+writetable(lmm_super_crosstime, ['/isilon/LFMI/VMdrive/Ayaka/EEG/Revision_round1/Fig5/AllCond/PASrating1/lmm_super.csv']);
+writetable(lmm_basic_crosstime, ['/isilon/LFMI/VMdrive/Ayaka/EEG/Revision_round1/Fig5/AllCond/PASrating1/lmm_basic.csv']);
 
 %% Average Basic 1 & 2:
 basic1dist = dist_for_stats{2};
@@ -783,16 +818,22 @@ smoothingval = 10;
 
 summaryT = lmm_super_crosstime;
 
+summaryT.DistZ = zeros(height(summaryT),1);
 subjects = unique(summaryT.Subject);
-Var_z = zeros(height(summaryT),1);
+traces   = unique(summaryT.SuperCorr);
+for s = subjects'
+    for tr = traces'
+        idx = summaryT.Subject == s & summaryT.SuperCorr == tr;
+        baseIdx = idx & summaryT.timebin <= 81;
+        x = summaryT.Dist(idx);
+        % mu = mean(x);
+        % sigma = std(x);
+        mu = nanmean(summaryT.Dist(baseIdx));
+        sigma = nanstd(summaryT.Dist(baseIdx));
 
-for s = 1:length(subjects)
-    idx = summaryT.Subject == subjects(s);
-    v = summaryT.Dist(idx);
-    Var_z(idx) = (v - mean(v)) ./ std(v);
+        summaryT.DistZ(idx) = (x - mu) / sigma;
+    end
 end
-summaryT.Dist = Var_z;
-
 
 figure; set(gcf,'Color','w');
 hold on;
@@ -800,12 +841,10 @@ subplot(1,2,1); hold on
 
 colors = [
     94/255, 201/255,  98/255;
-    33/255, 145/255, 140/255; 
-    64/255,  70/255, 136/255;
     68/255,   1/255,  84/255
 ];
 
-groups = unique(summaryT.PAS);
+groups = unique(summaryT.SuperCorr);
 conds = unique(summaryT.Cond);
 timeind = unique(summaryT.timebin);
 
@@ -816,8 +855,8 @@ for i = 1:length(groups)
     sem_vals  = nan(size(timeind));
 
     for t = 1:length(timeind)
-        idx = summaryT.PAS == gval & summaryT.timebin == timeind(t);
-        vals = summaryT.Dist(idx);
+        idx = summaryT.SuperCorr == gval & summaryT.timebin == timeind(t);
+        vals = summaryT.DistZ(idx);
         
         mean_vals(t) = mean(vals);
         sem_vals(t)  = std(vals) / sqrt(sum(~isnan(vals)));
@@ -834,30 +873,59 @@ yline(0,'--');
 
 xlabel('Time (s)');
 ylabel('Signed Distance (a.u.)');
-legend('PAS = 0','PAS = 1','PAS = 2','PAS = 3');
+legend('Incorrect','Correct');
 title('Superordinate distances');
 xlim([-0.4,0.8]);
-ylim([-0.1 0.25]);
-lmm_super_crosstime = summaryT;
+% ylim([-0.1 0.25]);
 
 summaryT = lmm_basic_crosstime;
 
-subjects = unique(summaryT.Subject);
-Var_z = zeros(height(summaryT),1);
-for s = 1:length(subjects)
-    idx = (summaryT.Subject == subjects(s)) & (double(summaryT.Exemp) > 12);
-    v = summaryT.Dist(idx);
-    Var_z(idx) = (v - mean(v)) ./ std(v);
+% subjects = unique(summaryT.Subject);
+% Var_z = zeros(height(summaryT),1);
+% for s = 1:length(subjects)
+%     idx = (summaryT.Subject == subjects(s)) & (double(summaryT.Exemp) > 12);
+%     v = summaryT.Dist(idx);
+%     Var_z(idx) = (v - mean(v)) ./ std(v);
+% 
+%     idx2 = (summaryT.Subject == subjects(s)) & (double(summaryT.Exemp) <= 12);
+%     v = summaryT.Dist(idx2);
+%     Var_z(idx2) = (v - mean(v)) ./ std(v);
+% end
+% summaryT.Dist = Var_z;
 
-    idx2 = (summaryT.Subject == subjects(s)) & (double(summaryT.Exemp) <= 12);
-    v = summaryT.Dist(idx2);
-    Var_z(idx2) = (v - mean(v)) ./ std(v);
+summaryT.DistZ = zeros(height(summaryT),1);
+subjects = unique(summaryT.Subject);
+traces   = unique(summaryT.BasicCorr);
+for s = subjects'
+    for tr = traces'
+        idx1 = summaryT.Subject == s & summaryT.BasicCorr == tr & ismember(double(summaryT.Exemp), 1:6);
+        baseIdx = idx1 & summaryT.timebin <= 81;
+        x = summaryT.Dist(idx1);
+        % mu = mean(x);
+        % sigma = std(x);
+        mu = mean(summaryT.Dist(baseIdx));
+        sigma = std(summaryT.Dist(baseIdx));
+
+        summaryT.DistZ(idx1) = (x - mu) / sigma;
+    end
+
+    for tr = traces'
+        idx2 = summaryT.Subject == s & summaryT.BasicCorr == tr & ismember(double(summaryT.Exemp), 7:12);
+        baseIdx = idx2 & summaryT.timebin <= 81;
+        x = summaryT.Dist(idx2);
+        % mu = mean(x);
+        % sigma = std(x);
+        mu = nanmean(summaryT.Dist(baseIdx));
+        sigma = nanstd(summaryT.Dist(baseIdx));
+
+        summaryT.DistZ(idx2) = (x - mu) / sigma;
+    end
+
 end
-summaryT.Dist = Var_z;
 
 subplot(1,2,2); hold on
 
-groups = unique(summaryT.PAS);
+groups = unique(summaryT.BasicCorr);
 timeind = unique(summaryT.timebin);
 
 for i = 1:length(groups)
@@ -867,11 +935,11 @@ for i = 1:length(groups)
     sem_vals  = nan(size(timeind));
 
     for t = 1:length(timeind)
-        idx = summaryT.PAS == gval & summaryT.timebin == timeind(t);
-        vals = summaryT.Dist(idx);
+        idx = summaryT.BasicCorr == gval & summaryT.timebin == timeind(t);
+        vals = summaryT.DistZ(idx);
         
-        mean_vals(t) = mean(vals);
-        sem_vals(t)  = std(vals) / sqrt(sum(~isnan(vals)));
+        mean_vals(t) = nanmean(vals);
+        sem_vals(t)  = nanstd(vals) / sqrt(sum(~isnan(vals)));
     end
 
     h = shadedErrorBar(timevals, smoothdata(mean_vals,'sgolay',smoothingval), smoothdata(sem_vals,'sgolay',smoothingval), ...
@@ -882,12 +950,13 @@ for i = 1:length(groups)
 end
 
 grid 'on';
-ylim([-0.1 0.25]);
+% ylim([-0.1 0.25]);
 xline(0,'--');
 yline(0,'--');
 xlabel('Time (s)');
 ylabel('Signed Distance (a.u.)');
-legend('PAS = 0','PAS = 1','PAS = 2','PAS = 3');
+legend('Correct','Incorrect');
 title('Basic distances');
 xlim([-0.4,0.8]);
-lmm_basic_crosstime = summaryT;
+
+%

@@ -11,7 +11,7 @@ clear
 close all
 
 clc
-load('/isilon/LFMI/VMdrive/Ayaka/EEG/fromThomas/Data/Behavioral/C2F_BehavData_30Subs.mat');
+load('/isilon/LFMI/VMdrive/Ayaka/EEG/Data_fromThomas/Behavioral/C2F_BehavData_30Subs.mat');
 numSubjects = 30;
 cond1 = 'Normal';
 cond2 = 'Masked';

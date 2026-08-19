@@ -4,7 +4,7 @@ clear;
 addpath('/isilon/LFMI/VMdrive/Ayaka/EEG/toolboxes/CoSMoMVPA/mvpa');
 %% Load each subject:
 numSubjects = 33;
-subjectslist = setdiff(1:numSubjects,[22 32 33]); %exclude subject 27
+subjectslist = setdiff(1:numSubjects,[22 32 33]);
 bootstrapNUM = 20000;
 conditionLIST = {'Normal','Masked','LSF'};
 exemppairlist{1} = 1:3;
