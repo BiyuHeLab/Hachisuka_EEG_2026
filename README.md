@@ -217,7 +217,6 @@ ACTICAP layout:
 -----
 
 ### *toolboxes*
- ! [rejected]        main -> main (non-fast-forward)
 Fieldtrip: https://www.fieldtriptoolbox.org/
 
 CoSMoMVPA: https://www.cosmomvpa.org/
